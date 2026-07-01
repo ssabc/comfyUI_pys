@@ -95,9 +95,8 @@ def patch_prompt(prompt, args, run_index):
 
     if args.save_node:
         save_inputs = patched[args.save_node].setdefault("inputs", {})
+        # 只修改输出文件夹，不修改文件名前缀，沿用Sequential‑Image‑Loader传递的原名称
         save_inputs["output_path"] = full_output_dir
-        if args.filename_prefix_input:
-            save_inputs[args.filename_prefix_input] = f"{args.filename_prefix}_{args.start + run_index:05d}"
 
     return patched
 
@@ -135,7 +134,7 @@ def scan_all_images(folder):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Day28批量脚本，自动扫描子文件夹图片，20张自动分组，input/output已硬编码"
+        description="Day28批量脚本，原文件名保留，自动扫描子文件夹，20张分组"
     )
     parser.add_argument("--workflow", default="s-0701-day28.json")
     parser.add_argument("--server", default="http://127.0.0.1:8188")
@@ -157,11 +156,10 @@ def main():
     parser.add_argument("--output-input", default="output_path")
     parser.add_argument("--filename-prefix-input", default="filename_prefix")
     parser.add_argument("--output")
-    parser.add_argument("--filename-prefix", default="batch")
 
     args = parser.parse_args()
 
-    # 硬编码默认路径，命令行不传时自动使用
+    # 硬编码固定路径
     if not args.input:
         args.input = r"D:\soft\ss_ai\resources\Day28\input_batch"
     if not args.output:
